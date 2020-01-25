@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mindorks.bootcamp.instagram.data.repository.DummyRepository
 import com.mindorks.bootcamp.instagram.data.repository.UserRepository
+import com.mindorks.bootcamp.instagram.di.TempDirectory
 import com.mindorks.bootcamp.instagram.ui.base.BaseActivity
 import com.mindorks.bootcamp.instagram.ui.dummy.DummyViewModel
 import com.mindorks.bootcamp.instagram.ui.login.LoginViewModel
+import com.mindorks.bootcamp.instagram.ui.main.MainSharedViewModel
 import com.mindorks.bootcamp.instagram.ui.main.MainViewModel
 import com.mindorks.bootcamp.instagram.ui.profile.ProfileViewModel
 import com.mindorks.bootcamp.instagram.ui.signup.SignUpViewModel
@@ -17,6 +19,7 @@ import com.mindorks.bootcamp.instagram.utils.rx.SchedulerProvider
 import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
+import java.io.File
 
 /**
  * Kotlin Generics Reference: https://kotlinlang.org/docs/reference/generics.html
@@ -70,9 +73,9 @@ class ActivityModule(private val activity: BaseActivity<*>) {
         networkHelper: NetworkHelper,
         userRepository: UserRepository
     ): SignUpViewModel = ViewModelProviders.of(
-            activity, ViewModelProviderFactory(SignUpViewModel::class) {
-                SignUpViewModel(schedulerProvider, compositeDisposable, networkHelper, userRepository)
-            }).get(SignUpViewModel::class.java)
+        activity, ViewModelProviderFactory(SignUpViewModel::class) {
+            SignUpViewModel(schedulerProvider, compositeDisposable, networkHelper, userRepository)
+        }).get(SignUpViewModel::class.java)
 
     @Provides
     fun provideMainViewModel(
@@ -89,9 +92,20 @@ class ActivityModule(private val activity: BaseActivity<*>) {
         schedulerProvider: SchedulerProvider,
         compositeDisposable: CompositeDisposable,
         networkHelper: NetworkHelper,
-        userRepository: UserRepository
+        userRepository: UserRepository,
+        @TempDirectory directory: File
     ): ProfileViewModel = ViewModelProviders.of(
         activity, ViewModelProviderFactory(ProfileViewModel::class) {
-            ProfileViewModel(schedulerProvider, compositeDisposable, networkHelper,userRepository)
+            ProfileViewModel(schedulerProvider, compositeDisposable, networkHelper, userRepository,directory)
         }).get(ProfileViewModel::class.java)
+
+    @Provides
+    fun provideMainSharedViewModel(
+        schedulerProvider: SchedulerProvider,
+        compositeDisposable: CompositeDisposable,
+        networkHelper: NetworkHelper
+        ): MainSharedViewModel = ViewModelProviders.of(
+        activity, ViewModelProviderFactory(MainSharedViewModel::class) {
+            MainSharedViewModel(schedulerProvider, compositeDisposable, networkHelper)
+        }).get(MainSharedViewModel::class.java)
 }

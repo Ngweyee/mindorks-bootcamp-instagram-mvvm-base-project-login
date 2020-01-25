@@ -64,6 +64,7 @@ abstract class BaseFragment<VM : BaseViewModel> : Fragment() {
 
     fun goBack() {
         if (activity is BaseActivity<*>) (activity as BaseActivity<*>).goBack()
+
     }
 
 

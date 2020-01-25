@@ -4,6 +4,7 @@ import com.mindorks.bootcamp.instagram.data.local.db.DatabaseService
 import com.mindorks.bootcamp.instagram.data.model.Post
 import com.mindorks.bootcamp.instagram.data.model.User
 import com.mindorks.bootcamp.instagram.data.remote.NetworkService
+import com.mindorks.bootcamp.instagram.data.remote.request.PostCreationRequest
 import com.mindorks.bootcamp.instagram.data.remote.request.PostLikeModifyRequest
 import io.reactivex.Single
 import javax.inject.Inject
@@ -13,7 +14,11 @@ class PostRepository @Inject constructor(
     private val databaseService: DatabaseService
 ) {
 
-    fun fetchHomePostList(firstPostId: String?, lastPostId: String?, user: User): Single<List<Post>> {
+    fun fetchHomePostList(
+        firstPostId: String?,
+        lastPostId: String?,
+        user: User
+    ): Single<List<Post>> {
         return networkService.doHomePostListCall(
             firstPostId,
             lastPostId,
@@ -58,6 +63,29 @@ class PostRepository @Inject constructor(
 
             return@map post
         }
+    }
+
+    fun createPost(imageUrl: String, imgWidth: Int, imgHeight: Int, user: User): Single<Post> {
+        return networkService.doPostCreateCall(
+            PostCreationRequest(imageUrl, imgWidth, imgHeight),
+            user.id,
+            user.accessToken
+        )
+            .map {
+                Post(
+                    it.data.id,
+                    it.data.imageUrl,
+                    it.data.imageWidth,
+                    it.data.imageHeight,
+                    Post.User(
+                        user.id,
+                        user.name,
+                        user.profilePicUrl
+                    ),
+                    mutableListOf(),
+                    it.data.createdAt
+                )
+            }
     }
 
 }

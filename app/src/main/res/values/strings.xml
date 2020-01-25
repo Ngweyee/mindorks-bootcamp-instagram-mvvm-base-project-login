@@ -30,6 +30,9 @@
     <string name="post_like_label">%1d likes</string>
     <string name="label_edit_profile">Edit Profile</string>
     <string name="update_successful">Profile Update Successfully</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="try_again">Try Again</string>
 
 
 </resources>

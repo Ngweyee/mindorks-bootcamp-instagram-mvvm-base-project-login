@@ -101,6 +101,10 @@ dependencies {
     // Debugging
     debugImplementation "com.amitshekhar.android:debug-db:$debug_db_version"
 
+    // Para Camera
+    implementation "com.mindorks:paracamera:$rootProject.paraCamera_version"
+
+
     // Local Unit tests
     testImplementation "junit:junit:$junit_version"
     testImplementation "org.mockito:mockito-core:$mockito_version"
@@ -115,4 +119,5 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-intents:$espresso_version"
     androidTestImplementation "org.mockito:mockito-core:$mockito_version"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
+
 }

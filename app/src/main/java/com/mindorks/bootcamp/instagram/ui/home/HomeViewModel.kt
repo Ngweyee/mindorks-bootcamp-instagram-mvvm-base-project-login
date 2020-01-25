@@ -24,9 +24,16 @@ class HomeViewModel(
 ) : BaseViewModel(schedulerProvider, compositeDisposable, networkHelper) {
 
     val loading: MutableLiveData<Boolean> = MutableLiveData()
+
     val posts: MutableLiveData<Resource<List<Post>>> = MutableLiveData()
 
+    val refreshPosts: MutableLiveData<Resource<List<Post>>> = MutableLiveData()
+
     private val user: User = userRepository.getCurrentUser()!!
+
+    var firstPostId: String? = null
+
+    var lastPostId: String? = null
 
     init {
 
@@ -46,7 +53,17 @@ class HomeViewModel(
 
                 }
                 .subscribe({
+
+
                     allPostList.addAll(it)
+
+                    firstPostId = allPostList.maxBy {
+                        it.createdAt.time
+                    }?.id
+
+                    lastPostId = allPostList.minBy {
+                        it.createdAt.time
+                    }?.id
                     loading.postValue(false)
                     posts.postValue(Resource.success(it))
                 },
@@ -62,8 +79,6 @@ class HomeViewModel(
     }
 
     private fun loadMorePosts() {
-        val firstPostId = if (allPostList.isNotEmpty()) allPostList[0].id else null
-        val lastPostId = if (allPostList.size > 1) allPostList[allPostList.size - 1].id else null
 
         if (checkInternetConnectionWithMessage()) paginator.onNext(Pair(firstPostId, lastPostId))
 
@@ -71,5 +86,12 @@ class HomeViewModel(
 
     fun onLoadMore() {
         if (loading.value !== null && loading.value == false) loadMorePosts()
+    }
+
+    fun onNewPost(post: Post) {
+        allPostList.add(0, post)
+        refreshPosts.postValue(Resource.success(mutableListOf<Post>().apply {
+            addAll(allPostList)
+        }))
     }
 }

@@ -56,7 +56,10 @@ abstract class BaseActivity<VM : BaseViewModel> : AppCompatActivity() {
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0)
             supportFragmentManager.popBackStackImmediate()
-        else super.onBackPressed()
+        else {
+            super.onBackPressed()
+            finish()
+        }
     }
 
     @LayoutRes

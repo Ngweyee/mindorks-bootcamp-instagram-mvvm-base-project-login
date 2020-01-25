@@ -6,16 +6,22 @@ import com.mindorks.bootcamp.instagram.data.model.User
 import com.mindorks.bootcamp.instagram.data.repository.UserRepository
 import com.mindorks.bootcamp.instagram.ui.base.BaseViewModel
 import com.mindorks.bootcamp.instagram.utils.common.Event
+import com.mindorks.bootcamp.instagram.utils.common.FileUtils
+import com.mindorks.bootcamp.instagram.utils.common.Resource
 import com.mindorks.bootcamp.instagram.utils.common.Resource.Companion.error
 import com.mindorks.bootcamp.instagram.utils.network.NetworkHelper
 import com.mindorks.bootcamp.instagram.utils.rx.SchedulerProvider
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import java.io.File
+import java.io.InputStream
 
 class ProfileViewModel(
     schedulerProvider: SchedulerProvider,
     compositeDisposable: CompositeDisposable,
     networkHelper: NetworkHelper,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val directory: File
 ) : BaseViewModel(schedulerProvider, compositeDisposable, networkHelper) {
 
     val nameField: MutableLiveData<String> = MutableLiveData()
@@ -32,7 +38,7 @@ class ProfileViewModel(
 
     val uploading: MutableLiveData<Boolean> = MutableLiveData()
 
-    val updating: MutableLiveData<Pair<Boolean,User>> = MutableLiveData()
+    val updating: MutableLiveData<Pair<Boolean, User>> = MutableLiveData()
 
     fun onBioChange(bio: String) = tagLine.postValue(bio)
 
@@ -93,7 +99,7 @@ class ProfileViewModel(
                     newUser
                 ).subscribeOn(schedulerProvider.io())
                     .subscribe({
-                        updating.postValue(Pair(true,newUser))
+                        updating.postValue(Pair(true, newUser))
                     }, {
                         handleNetworkError(it)
                     })
@@ -102,6 +108,36 @@ class ProfileViewModel(
 
     }
 
+    fun onGalleryImageSelected(inputStream: InputStream) {
+        uploading.postValue(true)
+        compositeDisposable.add(
+            Single.fromCallable {
+                FileUtils.saveInputStreamToFile(
+                    inputStream, directory, "gallery_img_temp", 500
+                )
+            }
+                .subscribeOn(schedulerProvider.io())
+                .subscribe(
+                    {
+                        if (it != null) {
+                            FileUtils.getImageSize(it)?.run {
+                                //   uploadPhotoAndCreatePost(it, this)
+                            }
+                        } else {
+                            uploading.postValue(false)
+                            messageStringId.postValue(Resource.error(R.string.try_again))
+                        }
+                    },
+                    {
+                        uploading.postValue(false)
+                        messageStringId.postValue(Resource.error(R.string.try_again))
+                    }
+                )
+
+
+        )
+
+    }
 
 
 }

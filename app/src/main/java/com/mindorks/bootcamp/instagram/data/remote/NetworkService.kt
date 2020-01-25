@@ -3,6 +3,7 @@ package com.mindorks.bootcamp.instagram.data.remote
 import com.mindorks.bootcamp.instagram.data.remote.request.*
 import com.mindorks.bootcamp.instagram.data.remote.response.*
 import io.reactivex.Single
+import okhttp3.MultipartBody
 import retrofit2.http.*
 import javax.inject.Singleton
 
@@ -15,18 +16,6 @@ interface NetworkService {
         @Body request: DummyRequest,
         @Header(Networking.HEADER_API_KEY) apiKey: String = Networking.API_KEY // default value set when Networking create is called
     ): Single<DummyResponse>
-
-    /*
-     * Example to add other headers
-     *
-     *  @POST(Endpoints.DUMMY_PROTECTED)
-        fun sampleDummyProtectedCall(
-            @Body request: DummyRequest,
-            @Header(Networking.HEADER_USER_ID) userId: String, // pass using UserRepository
-            @Header(Networking.HEADER_ACCESS_TOKEN) accessToken: String, // pass using UserRepository
-            @Header(Networking.HEADER_API_KEY) apiKey: String = Networking.API_KEY // default value set when Networking create is called
-        ): Single<DummyResponse>
-     */
 
     @POST(Endpoints.LOGIN)
     fun doUserLogin(
@@ -81,5 +70,23 @@ interface NetworkService {
         @Header(Networking.HEADER_ACCESS_TOKEN) accessToken: String?,
         @Header(Networking.HEADER_API_KEY) apiKey: String = Networking.API_KEY
     ): Single<GeneralResponse>
+
+    @Multipart
+    @POST(Endpoints.IMAGE_UPLOAD)
+    fun doUploadImage(
+        @Part image: MultipartBody.Part,
+        @Header(Networking.HEADER_USER_ID) userId: String?,
+        @Header(Networking.HEADER_ACCESS_TOKEN) accessToken: String?,
+        @Header(Networking.HEADER_API_KEY) apiKey: String = Networking.API_KEY
+
+    ): Single<ImageResponse>
+
+    @POST(Endpoints.CREATE_POST)
+    fun doPostCreateCall(
+        @Body request: PostCreationRequest,
+        @Header(Networking.HEADER_USER_ID) userId: String?,
+        @Header(Networking.HEADER_ACCESS_TOKEN) accessToken: String?,
+        @Header(Networking.HEADER_API_KEY) apiKey: String = Networking.API_KEY
+    ): Single<PostCreationResponse>
 
 }

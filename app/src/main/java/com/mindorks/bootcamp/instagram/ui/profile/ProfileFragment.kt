@@ -14,6 +14,7 @@ import com.mindorks.bootcamp.instagram.ui.base.BaseFragment
 import com.mindorks.bootcamp.instagram.ui.login.LoginActivity
 import kotlinx.android.synthetic.main.fragment_profile.*
 
+
 class ProfileFragment : BaseFragment<ProfileViewModel>() {
 
     companion object {
@@ -41,6 +42,7 @@ class ProfileFragment : BaseFragment<ProfileViewModel>() {
 
         tvLogout.setOnClickListener {
             viewModel.logout()
+            goBack()
         }
 
 
@@ -99,6 +101,8 @@ class ProfileFragment : BaseFragment<ProfileViewModel>() {
                     }
                 }
             }
+
+
         }
     }
 

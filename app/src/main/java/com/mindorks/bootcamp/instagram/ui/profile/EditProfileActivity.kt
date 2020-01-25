@@ -8,19 +8,21 @@ import android.text.TextWatcher
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.mindorks.bootcamp.instagram.R
 import com.mindorks.bootcamp.instagram.di.component.ActivityComponent
 import com.mindorks.bootcamp.instagram.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_edit_profile.*
+import java.io.FileNotFoundException
 
 
 class EditProfileActivity : BaseActivity<ProfileViewModel>() {
 
     companion object {
-        const val PICK_IMAGE = 1
+        const val PICK_IMAGE = 1001
     }
 
     override fun provideLayoutId(): Int =
-        com.mindorks.bootcamp.instagram.R.layout.activity_edit_profile
+        R.layout.activity_edit_profile
 
     override fun injectDependencies(activityComponent: ActivityComponent) =
         activityComponent.inject(this)
@@ -56,11 +58,16 @@ class EditProfileActivity : BaseActivity<ProfileViewModel>() {
         })
 
         tvChangePhoto.setOnClickListener {
-            val intent = Intent()
-            intent.type = "image/*"
-            intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE)
+            Intent(
+                Intent.ACTION_PICK
 
+            )
+                .apply {
+                    action = Intent.ACTION_GET_CONTENT
+                    type = "image/*"
+                }.run {
+                    startActivityForResult(this, PICK_IMAGE)
+                }
         }
 
         ivSave.setOnClickListener {
@@ -79,9 +86,15 @@ class EditProfileActivity : BaseActivity<ProfileViewModel>() {
             if (requestCode == PICK_IMAGE) {
                 // Get the url from data
                 val selectedImage = data!!.data
-                if (selectedImage != null) {
-                    loadingProgressBar.show(this, "Uploading Image Please")
-                    viewModel.onImageChange(selectedImage.toString())
+                try {
+                    intent?.data?.let {
+                        contentResolver?.openInputStream(it)?.run {
+                            viewModel.onGalleryImageSelected(this)
+                        }
+                    } ?: showMessage(R.string.try_again)
+                } catch (e: FileNotFoundException) {
+                    e.printStackTrace()
+                    showMessage(R.string.try_again)
                 }
             }
         }
@@ -108,8 +121,7 @@ class EditProfileActivity : BaseActivity<ProfileViewModel>() {
                 val glideRequest = Glide
                     .with(ivAddProfile)
                     .load(it)
-                    .apply(RequestOptions.centerCropTransform())
-                    .apply(RequestOptions.placeholderOf(com.mindorks.bootcamp.instagram.R.drawable.ic_profile_add_pic))
+                    .apply(RequestOptions.placeholderOf(R.drawable.ic_profile_add_pic))
 
                 glideRequest.into(ivAddProfile)
 
@@ -120,8 +132,8 @@ class EditProfileActivity : BaseActivity<ProfileViewModel>() {
         viewModel.updating.observe(this, Observer {
             if (it.first) loadingProgressBar.hide()
             val newIntent = Intent()
-            newIntent.putExtra("User",it.second)
-            setResult(Activity.RESULT_OK,newIntent)
+            newIntent.putExtra("User", it.second)
+            setResult(Activity.RESULT_OK, newIntent)
             viewModel.onNameChange(etEditName.text.toString())
             viewModel.onBioChange(etEditBio.text.toString())
             finish()
