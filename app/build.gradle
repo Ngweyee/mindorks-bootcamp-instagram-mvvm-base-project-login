@@ -108,7 +108,6 @@ dependencies {
     // Local Unit tests
     testImplementation "junit:junit:$junit_version"
     testImplementation "org.mockito:mockito-core:$mockito_version"
-    kaptTest "com.google.dagger:dagger-compiler:$dagger_version"
     testImplementation "android.arch.core:core-testing:$core_testing_version"
     testImplementation "org.hamcrest:hamcrest-library:$hamcrest_version"
 
@@ -119,5 +118,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-intents:$espresso_version"
     androidTestImplementation "org.mockito:mockito-core:$mockito_version"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
+    kaptTest "com.google.dagger:dagger-compiler:$dagger_version"
+
 
 }

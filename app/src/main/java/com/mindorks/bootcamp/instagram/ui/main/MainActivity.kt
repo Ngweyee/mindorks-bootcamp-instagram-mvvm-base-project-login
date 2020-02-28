@@ -22,7 +22,6 @@ class MainActivity : BaseActivity<MainViewModel>() {
     @Inject
     lateinit var mainSharedViewModel: MainSharedViewModel
 
-
     private var activityFragment: Fragment? = null
 
     override fun provideLayoutId(): Int = R.layout.activity_main

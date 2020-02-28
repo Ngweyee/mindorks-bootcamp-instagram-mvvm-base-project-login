@@ -48,7 +48,7 @@ class UserRepository @Inject constructor(
         val userBio = userPreferences.getUserBio()
 
         return if (userId !== null && userName != null && userEmail != null && accessToken != null)
-            User(userId, userName, userEmail, accessToken,userProfile,userBio)
+            User(userId, userName, userEmail, accessToken, userProfile, userBio)
         else
             null
     }

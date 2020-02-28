@@ -30,6 +30,7 @@ class LoginViewModel(
     val loggingIn: MutableLiveData<Boolean> = MutableLiveData()
 
     val emailValidation: LiveData<Resource<Int>> = filterValidation(Validation.Field.EMAIL)
+
     val passwordValidation: LiveData<Resource<Int>> = filterValidation(Validation.Field.PASSWORD)
 
     private fun filterValidation(field: Validation.Field) =
@@ -39,12 +40,10 @@ class LoginViewModel(
                 ?: Resource.unknown()
         }
 
-    override fun onCreate() {}
 
     fun onEmailChange(email: String) = emailField.postValue(email)
 
     fun onPasswordChange(email: String) = passwordField.postValue(email)
-
 
 
     fun onLogin() {
@@ -79,5 +78,9 @@ class LoginViewModel(
 
     fun goSignup() {
         launchSignup.postValue(Event(emptyMap()))
+    }
+
+    override fun onCreate() {
+
     }
 }

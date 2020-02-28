@@ -79,11 +79,11 @@ class ProfileFragment : BaseFragment<ProfileViewModel>() {
         })
 
         viewModel.nameField.observe(this, Observer {
-            tvProfileName.setText(it)
+            tvProfileName.text = it
         })
 
         viewModel.tagLine.observe(this, Observer {
-            tvProfileDetail.setText(it)
+            tvProfileDetail.text = it
         })
 
     }
